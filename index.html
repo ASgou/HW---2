@@ -5,65 +5,68 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!--CSS Styles -->
-    <link rel="stylesheet" href="assets/css/styles.css" />
-
-    <!-- Favicons -->
-    <link
-      rel="apple-touch-icon"
-      sizes="180x180"
-      href="assets/icons/apple-touch-icon.png"
-    />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="32x32"
-      href="assets/icons/favicon-32x32.png"
-    />
-
-    <!-- Animate CSS CDN -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
-    />
-    <title>My Website</title>
+    <title>Guessing game</title>
   </head>
 
   <body>
-    <h1> Hello, this is my website </h1>
-    <!-- Navbar -->
-    <ul>
-  <li><a href="default.asp">Home</a></li>
-  <li><a href="news.asp">News</a></li>
-  <li><a href="contact.asp">Contact</a></li>
-  <li><a href="about.asp">About</a></li>
-</ul>
+  <h1>The Psychic Game</h1>
+  <p>Guess a letter the computer is thinking of! Press any letter to begin.</p>
+  <p>Correct answer is between A to Z.</p>
+  <div id="currentSituation"></div>
+  <script>
+    const possibleAnswers = ['a','b','c','d','e','f','g','h','i',
+      'j','k','l','m','n','o','p', 'q','r',
+      's','t','u','v','w','x','y','z'];
 
-    <!-- Hero Section -->
+    let wins = 0;
+    let losses = 0;
+    let chances = 9;
+    
+    let guesses = [];
+    
+    function getNewAnswer(){
+      let randomIndex = Math.floor(Math.random() * possibleAnswers.length);
+      return possibleAnswers[randomIndex];
+    }
 
-    <!-- More about -->
+    let answer = getNewAnswer();
 
-    <!-- Skills section -->
+    document.addEventListener("keydown", processGuess);
 
-    <!-- Projects section -->
+    function processGuess(event){
+      const userGuess = event.key.toLowerCase();
 
-    <!-- Contact section -->
+      if (/^[a-z]+$/.test(userGuess) && guesses.indexOf(userGuess) == -1) {
+        guesses.push(userGuess);
 
-    <!-- Social accounts - Fixed to the right -->
+        if (userGuess === answer) {
+          // the guess is correct
+          wins++;
+          chances = 9;
+          guesses.length = 0; 
+          alert(`That's right! The letter is ${answer}`);
+          answer = getNewAnswer();
+        } else if (chances === 1) {
+          // all chances are used
+          losses++;
+          chances = 9;
+          guesses.length = 0;
+          alert(`Whoops you lose! The correct letter is ${answer}`);
+          answer = getNewAnswer();
+        } else if (userGuess !== answer) {
+          // the guess is wrong
+          alert(`Not ${userGuess}! Try again`);
+          chances--;
+        }
 
-    <!-- Scroll to top -->
-
-    <!-- Footer section -->
-
-    <!-- Website scripts -->
-    <script src="assets/js/app.js"></script>
-
-    <!-- Ion icons scripts -->
-    <script>
-   @media screen and (min-width: 480px) {
-  #leftsidebar {width: 200px; float: left;}
-  #main {margin-left: 216px;}
-}
-    </script>
-  </body>
+        let html = `<p>Your previous choice(s): </p> 
+          <p> ${guesses.join(", ")} </p> 
+          <p>wins: ${wins} </p> 
+          <p>losses: ${losses} </p> 
+          <p>chances left: ${chances} </p>`;
+        document.querySelector("#currentSituation").innerHTML = html;
+      }
+    }
+  </script>
+</body>
 </html>
